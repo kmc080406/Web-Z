@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web-Z Sketch Final | Clean Doodle Diagnostic</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Poor+Story&family=Nanum+Pen+Script&family=JetBrains+Mono:wght@400;700;800&display=swap');
+
+    :root {
+      --paper: #fff7d7;
+      --paper-2: #fff1bc;
+      --paper-3: #f8e7a6;
+      --ink: #2b2118;
+      --muted: #7a6550;
+      --line: rgba(43, 33, 24, .18);
+      --blue-pen: #2454c6;
+      --red-pen: #d33f49;
+      --green-pen: #0f8f60;
+      --purple-pen: #7c3aed;
+      --shadow: rgba(43, 33, 24, .82);
+    }
+
+    body.dark-mode {
+      --paper: #17130f;
+      --paper-2: #211a13;
+      --paper-3: #2d2419;
+      --ink: #f7e6b5;
+      --muted: #bda878;
+      --line: rgba(247, 230, 181, .16);
+      --blue-pen: #8db7ff;
+      --red-pen: #ff9aa2;
+      --green-pen: #75e0aa;
+      --purple-pen: #c4a0ff;
+      --shadow: rgba(0, 0, 0, .72);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      color: var(--ink) !important;
+      font-family: 'Gaegu', 'Poor Story', system-ui, sans-serif !important;
+      background:
+        radial-gradient(circle at 14% 18%, rgba(255, 230, 109, .35), transparent 16rem),
+        radial-gradient(circle at 84% 8%, rgba(147, 197, 253, .32), transparent 18rem),
+        radial-gradient(circle at 70% 88%, rgba(253, 164, 175, .25), transparent 18rem),
+        repeating-linear-gradient(
+          0deg,
+          var(--paper) 0px,
+          var(--paper) 30px,
+          rgba(43, 33, 24, .10) 31px,
+          var(--paper) 32px
+        ) !important;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .22;
+      background-image:
+        radial-gradient(rgba(43, 33, 24, .22) 0.6px, transparent 0.8px);
+      background-size: 7px 7px;
+      mix-blend-mode: multiply;
+      z-index: 0;
+    }
+
+    #root {
+      position: relative;
+      z-index: 1;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Nanum Pen Script', 'Gaegu', cursive !important;
+      letter-spacing: .02em !important;
+    }
+
+    .thin-grid {
+      background-image:
+        linear-gradient(90deg, rgba(210, 80, 80, .32) 0 2px, transparent 2px),
+        repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 30px,
+          rgba(43, 33, 24, .12) 31px,
+          transparent 32px
+        ) !important;
+      background-size: 100% 100%, 100% 32px !important;
+      background-position: 44px 0, 0 0 !important;
+    }
+
+    .card-bg {
+      background: rgba(255, 250, 221, .94) !important;
+      border: 2.2px solid var(--ink) !important;
+      border-radius: 20px 13px 24px 15px !important;
+      box-shadow: 4px 5px 0 var(--shadow) !important;
+      backdrop-filter: none !important;
+      color: var(--ink) !important;
+      position: relative;
+    }
+
+    .card-bg::before {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border: 1px dashed rgba(43, 33, 24, .12);
+      border-radius: 16px 11px 20px 13px;
+      pointer-events: none;
+    }
+
+    .card-bg:nth-of-type(odd) { transform: rotate(-.18deg); }
+    .card-bg:nth-of-type(even) { transform: rotate(.18deg); }
+
+    aside {
+      background:
+        linear-gradient(90deg, rgba(255, 239, 166, .96), rgba(255, 247, 215, .95)) !important;
+      border-right: 3px solid var(--ink) !important;
+      box-shadow: 5px 0 0 rgba(43, 33, 24, .72) !important;
+      color: var(--ink) !important;
+    }
+
+    main {
+      background: transparent !important;
+      color: var(--ink) !important;
+    }
+
+    header {
+      border-color: rgba(43, 33, 24, .34) !important;
+    }
+
+    .glow-blue {
+      text-shadow: 2px 2px 0 rgba(36, 84, 198, .18), 0 0 0 transparent !important;
+    }
+
+    .tab-active {
+      background: #ffe66d !important;
+      color: var(--ink) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 3px 3px 0 var(--shadow) !important;
+      transform: rotate(-1.2deg);
+    }
+
+    button {
+      font-family: 'Gaegu', 'Poor Story', sans-serif !important;
+      color: var(--ink) !important;
+      border-color: var(--ink) !important;
+    }
+
+    button:hover {
+      transform: translate(-1px, -1px) rotate(-.5deg);
+    }
+
+    .bg-blue-600,
+    .hover\:bg-blue-500:hover {
+      background: #ffe66d !important;
+      color: var(--ink) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 3px 3px 0 rgba(43, 33, 24, .75) !important;
+    }
+
+    .bg-rose-600,
+    .hover\:bg-rose-500:hover {
+      background: #ff9aa2 !important;
+      color: var(--ink) !important;
+      border: 2px solid var(--ink) !important;
+      box-shadow: 3px 3px 0 rgba(43, 33, 24, .75) !important;
+    }
+
+    [class*="bg-[#0d1117"],
+    [class*="bg-[#010409"],
+    [class*="bg-blue-950"],
+    .bg-slate-700\/30 {
+      background: rgba(255, 248, 213, .82) !important;
+      color: var(--ink) !important;
+    }
+
+    [class*="border-[#30363d"],
+    .border-white\/\[0\.05\],
+    .border-white\/\[0\.06\],
+    .border-white\/\[0\.04\] {
+      border-color: rgba(43, 33, 24, .24) !important;
+    }
+
+    .text-white,
+    .text-slate-200,
+    .text-slate-300,
+    .text-slate-400 {
+      color: var(--ink) !important;
+    }
+
+    .text-slate-500 {
+      color: var(--muted) !important;
+    }
+
+    .text-blue-500,
+    .text-blue-400,
+    .text-blue-300 {
+      color: var(--blue-pen) !important;
+    }
+
+    .text-amber-200,
+    .text-amber-300 {
+      color: #8a4f00 !important;
+    }
+
+    .text-emerald-300,
+    .text-emerald-400 {
+      color: var(--green-pen) !important;
+    }
+
+    .text-rose-400 {
+      color: var(--red-pen) !important;
+    }
+
+    .bg-emerald-500\/10,
+    .bg-rose-500\/10,
+    .bg-amber-500\/10,
+    .bg-blue-900\/40,
+    .bg-purple-500\/10 {
+      background: rgba(255, 255, 255, .38) !important;
+      border-style: dashed !important;
+    }
+
+    .border-emerald-500\/20 { border-color: rgba(15, 143, 96, .55) !important; }
+    .border-rose-500\/20 { border-color: rgba(211, 63, 73, .55) !important; }
+    .border-amber-500\/20 { border-color: rgba(180, 112, 0, .55) !important; }
+    .border-blue-700\/50,
+    .border-blue-500\/20,
+    .border-blue-500\/10,
+    .border-blue-500\/30 { border-color: rgba(36, 84, 198, .50) !important; }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(43, 33, 24, .48) !important;
+      border-radius: 999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 247, 215, .4) !important;
+    }
+
+    svg polyline,
+    svg path,
+    svg circle {
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    svg polyline {
+      stroke-width: 4 !important;
+      stroke: var(--blue-pen) !important;
+      filter: drop-shadow(1px 1px 0 rgba(43, 33, 24, .22));
+    }
+
+    svg path[fill="rgba(37,99,235,.10)"],
+    svg path[fill="rgba(37,99,235,.1)"] {
+      fill: rgba(36, 84, 198, .12) !important;
+    }
+
+    .bg-blue-600.h-full,
+    div[style*="width"] .bg-blue-600 {
+      background: repeating-linear-gradient(
+        135deg,
+        var(--blue-pen) 0px,
+        var(--blue-pen) 6px,
+        #5178d8 6px,
+        #5178d8 10px
+      ) !important;
+      box-shadow: none !important;
+      border: 0 !important;
+    }
+
+    .content-fade {
+      animation: fadeIn .18s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px) rotate(-.12deg); }
+      to { opacity: 1; transform: translateY(0) rotate(0deg); }
+    }
+
+    table {
+      border-collapse: separate !important;
+      border-spacing: 0 4px !important;
+    }
+
+    th {
+      color: var(--muted) !important;
+      font-family: 'Gaegu', sans-serif !important;
+      font-size: 13px !important;
+    }
+
+    td {
+      background: rgba(255, 255, 255, .22);
+      border-top: 1px dashed rgba(43, 33, 24, .18);
+      border-bottom: 1px dashed rgba(43, 33, 24, .18);
+    }
+
+    footer {
+      color: rgba(43, 33, 24, .52) !important;
+      opacity: 1 !important;
+    }
+
+    .opacity-20,
+    .opacity-10 {
+      opacity: .75 !important;
+    }
+
+    .tracking-\[\.8em\] {
+      letter-spacing: .34em !important;
+    }
+
+
+    body.dark-mode {
+      background:
+        radial-gradient(circle at 14% 18%, rgba(255, 230, 109, .10), transparent 16rem),
+        radial-gradient(circle at 84% 8%, rgba(96, 165, 250, .16), transparent 18rem),
+        radial-gradient(circle at 70% 88%, rgba(248, 113, 113, .10), transparent 18rem),
+        repeating-linear-gradient(
+          0deg,
+          var(--paper) 0px,
+          var(--paper) 30px,
+          rgba(247, 230, 181, .10) 31px,
+          var(--paper) 32px
+        ) !important;
+    }
+
+    body.dark-mode::before {
+      opacity: .14;
+      background-image: radial-gradient(rgba(247, 230, 181, .22) 0.6px, transparent 0.8px);
+      mix-blend-mode: screen;
+    }
+
+    body.dark-mode .thin-grid {
+      background-image:
+        linear-gradient(90deg, rgba(255, 154, 162, .24) 0 2px, transparent 2px),
+        repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 30px,
+          rgba(247, 230, 181, .10) 31px,
+          transparent 32px
+        ) !important;
+    }
+
+    body.dark-mode .card-bg {
+      background: rgba(34, 27, 20, .94) !important;
+      border-color: rgba(247, 230, 181, .92) !important;
+      box-shadow: 4px 5px 0 rgba(0, 0, 0, .68) !important;
+    }
+
+    body.dark-mode .card-bg::before {
+      border-color: rgba(247, 230, 181, .15) !important;
+    }
+
+    body.dark-mode aside {
+      background:
+        linear-gradient(90deg, rgba(34, 27, 20, .97), rgba(23, 19, 15, .96)) !important;
+      border-color: rgba(247, 230, 181, .92) !important;
+      box-shadow: 5px 0 0 rgba(0, 0, 0, .68) !important;
+    }
+
+    body.dark-mode header {
+      border-color: rgba(247, 230, 181, .25) !important;
+    }
+
+    body.dark-mode .tab-active {
+      background: #8db7ff !important;
+      color: #17130f !important;
+      border-color: rgba(247, 230, 181, .92) !important;
+      box-shadow: 3px 3px 0 rgba(0, 0, 0, .72) !important;
+    }
+
+    body.dark-mode .bg-blue-600,
+    body.dark-mode .hover\:bg-blue-500:hover {
+      background: #8db7ff !important;
+      color: #17130f !important;
+      border-color: rgba(247, 230, 181, .92) !important;
+      box-shadow: 3px 3px 0 rgba(0, 0, 0, .72) !important;
+    }
+
+    body.dark-mode .bg-rose-600,
+    body.dark-mode .hover\:bg-rose-500:hover {
+      background: #ff9aa2 !important;
+      color: #17130f !important;
+      border-color: rgba(247, 230, 181, .92) !important;
+      box-shadow: 3px 3px 0 rgba(0, 0, 0, .72) !important;
+    }
+
+    body.dark-mode [class*="bg-[#0d1117"],
+    body.dark-mode [class*="bg-[#010409"],
+    body.dark-mode [class*="bg-blue-950"],
+    body.dark-mode .bg-slate-700\/30 {
+      background: rgba(23, 19, 15, .78) !important;
+      color: var(--ink) !important;
+    }
+
+    body.dark-mode .bg-emerald-500\/10,
+    body.dark-mode .bg-rose-500\/10,
+    body.dark-mode .bg-amber-500\/10,
+    body.dark-mode .bg-blue-900\/40,
+    body.dark-mode .bg-purple-500\/10 {
+      background: rgba(0, 0, 0, .18) !important;
+    }
+
+    body.dark-mode td {
+      background: rgba(0, 0, 0, .12);
+      border-color: rgba(247, 230, 181, .14);
+    }
+
+    body.dark-mode footer {
+      color: rgba(247, 230, 181, .58) !important;
+    }
+
+    .theme-toggle {
+      min-width: 34px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      border: 2px solid var(--ink) !important;
+      border-radius: 999px 12px 999px 14px !important;
+      background: var(--paper-3) !important;
+      box-shadow: 2px 2px 0 var(--shadow) !important;
+      font-size: 15px;
+      line-height: 1;
+      cursor: pointer;
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: translate(-1px, -1px) rotate(-4deg);
+      filter: brightness(1.04);
+    }
+
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+        scroll-behavior: auto !important;
+      }
+      .card-bg:nth-of-type(odd),
+      .card-bg:nth-of-type(even),
+      .tab-active {
+        transform: none !important;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      aside {
+        border-right: 0 !important;
+        border-bottom: 3px solid var(--ink) !important;
+        box-shadow: 0 4px 0 rgba(43, 33, 24, .72) !important;
+      }
+      .card-bg:nth-of-type(odd),
+      .card-bg:nth-of-type(even) {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("webz-theme");
+      var dark = saved ? saved === "dark" : window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (dark) document.body.classList.add("dark-mode");
+    } catch (e) {}
+  })();
+</script>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useCallback, useEffect, useMemo, useRef, useState, memo } = React;
+
+/* =========================
+   ERROR BOUNDARY
+========================= */
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, message: "" };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, message: error?.message || "알 수 없는 오류" };
+  }
+  componentDidCatch(error, info) {
+    console.error("[Web-Z Error]", error, info);
+  }
+  render() {
+    if (!this.state.hasError) return this.props.children;
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center p-6">
+        <div className="card-bg max-w-lg w-full p-6 text-center">
+          <h1 className="text-4xl font-black mb-3">WEB-Z 오류 노트</h1>
+          <p className="text-sm text-slate-500 leading-relaxed mb-4">
+            브라우저 API 차이 때문에 화면을 불러오는 중 오류가 발생했습니다. 새로고침하거나 다른 브라우저에서 다시 실행해 보세요.
+          </p>
+          <p className="mono text-xs break-all bg-[#010409]/30 rounded-xl p-3 mb-4">{this.state.message}</p>
+          <button className="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase" onClick={() => location.reload()}>
+            Reload
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
+
+/* =========================
+   CONFIG
+========================= */
+const APP = {
+  name: "WEB-Z",
+  version: "Sketch Final 1.2",
+  footer: "PURE_WEB_API_DIAGNOSTIC_NOTE",
+  tabs: [
+    ["Overview", "overview"],
+    ["CPU", "cpu"],
+    ["Memory", "memory"],
+    ["GPU", "gpu"],
+    ["Network", "network"],
+    ["Display", "display"],
+    ["Browser", "browser"],
+    ["Storage", "storage"],
+    ["Battery", "battery"],
+    ["Runtime", "runtime"],
+    ["Benchmark", "benchmark"]
+  ],
+  excluded: "Sensors, Media, Input, External Devices, Permissions 탭은 구현 범위에서 제외됨"
+};
+
+/* =========================
+   PURE UTILS
+========================= */
+const isBad = (v) => v === null || v === undefined || v === "" || Number.isNaN(v) || v === Infinity || v === -Infinity;
+const val = (v, fallback = "N/A") => isBad(v) ? fallback : v;
+const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+const now = () => new Date().toLocaleTimeString();
+const yesNo = (v) => v ? "ON" : "OFF";
+const support = (v) => v ? "지원" : "미지원";
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const safeRun = async (fn, fallback = null) => {
+  try { return await fn(); } catch { return fallback; }
+};
+const fmtBytes = (bytes) => {
+  if (isBad(bytes)) return "측정 불가";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let n = Number(bytes), i = 0;
+  while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
+  return `${n.toFixed(i === 0 ? 0 : 2)} ${units[i]}`;
+};
+const fmtMs = (ms) => isBad(ms) ? "측정 불가" : `${Math.round(ms)} ms`;
+const fmtSec = (sec) => {
+  if (isBad(sec) || sec === Infinity || sec < 0) return "알 수 없음";
+  if (sec < 60) return `${Math.round(sec)}초`;
+  if (sec < 3600) return `${Math.round(sec / 60)}분`;
+  return `${(sec / 3600).toFixed(1)}시간`;
+};
+
+const detect = {
+  deviceType() {
+    const ua = navigator.userAgent.toLowerCase();
+    const minSide = Math.min(screen.width, screen.height);
+    if (/ipad|tablet/.test(ua)) return "Tablet";
+    if (/mobile|android|iphone|ipod/.test(ua)) return "Mobile";
+    if ((navigator.maxTouchPoints || 0) > 1 && minSide > 700) return "Tablet";
+    return "PC";
+  },
+  os() {
+    const ua = navigator.userAgent;
+    if (/Windows/i.test(ua)) return "Windows";
+    if (/Android/i.test(ua)) return "Android";
+    if (/iPhone|iPad|iPod/i.test(ua)) return "iOS/iPadOS";
+    if (/Mac OS X|Macintosh/i.test(ua)) return "macOS";
+    if (/Linux/i.test(ua)) return "Linux";
+    return "Unknown";
+  },
+  browser() {
+    const ua = navigator.userAgent;
+    if (/Edg\//.test(ua)) return "Microsoft Edge";
+    if (/OPR\//.test(ua)) return "Opera";
+    if (/Chrome\//.test(ua) && !/Edg\//.test(ua)) return "Chrome/Chromium";
+    if (/Safari\//.test(ua) && !/Chrome\//.test(ua)) return "Safari";
+    if (/Firefox\//.test(ua)) return "Firefox";
+    return "Unknown";
+  },
+  storageWorks(type) {
+    try {
+      const store = type === "local" ? localStorage : sessionStorage;
+      store.setItem("__webz_test__", "1");
+      store.removeItem("__webz_test__");
+      return true;
+    } catch { return false; }
+  }
+};
+
+const initialState = () => ({
+  measuredAt: new Date().toISOString(),
+  device: { type: detect.deviceType(), os: detect.os(), browser: detect.browser() },
+  cpu: {
+    cores: navigator.hardwareConcurrency || null,
+    hintsSupported: false,
+    architecture: null, bitness: null, platform: navigator.platform || null, platformVersion: null,
+    model: null, mobile: null, wow64: null,
+    wasm: "WebAssembly" in window,
+    worker: "Worker" in window,
+    sharedArrayBuffer: "SharedArrayBuffer" in window,
+    atomics: "Atomics" in window,
+    offscreenCanvas: "OffscreenCanvas" in window,
+    pressure: { supported: false, active: false, state: null, source: null, time: null, note: "측정 전" }
+  },
+  memory: {
+    deviceMemorySupported: "deviceMemory" in navigator,
+    deviceMemory: navigator.deviceMemory || null,
+    perfMemorySupported: !!performance.memory,
+    usedJSHeapSize: performance.memory?.usedJSHeapSize || null,
+    totalJSHeapSize: performance.memory?.totalJSHeapSize || null,
+    jsHeapSizeLimit: performance.memory?.jsHeapSizeLimit || null
+  },
+  gpu: {
+    webgl: false, webgl2: false, vendor: null, renderer: null, version: null, shading: null,
+    maxTextureSize: null, maxRenderbufferSize: null, maxVertexAttribs: null, maxTextureUnits: null,
+    extensions: [], webgpu: "gpu" in navigator, webgpuInfo: null, webgpuFeatures: [], note: null
+  },
+  network: {
+    supported: !!(navigator.connection || navigator.mozConnection || navigator.webkitConnection),
+    online: navigator.onLine,
+    downlink: null, rtt: null, type: null, saveData: null,
+    timing: { load: null, dom: null, ttfb: null, dns: null, tcp: null, tls: null, response: null, resources: null },
+    resources: []
+  },
+  display: {},
+  browser: {},
+  storage: { supported: !!(navigator.storage && navigator.storage.estimate), usage: null, quota: null, persisted: null },
+  battery: { supported: false, level: null, charging: null, chargingTime: null, dischargingTime: null },
+  runtime: { fps: null, longTaskMs: 0, webLoad: null, opsPerSec: null },
+  bench: { cpuSingle: null, cpuMulti: null, memory: null, storage: null, network: null, runtime: null, overall: null }
+});
+
+/* =========================
+   COMPONENTS
+========================= */
+const Icon = memo(({ name, size = 15, className = "" }) => {
+  const paths = {
+    overview: "M3 3h7v9H3zm11 0h7v5h-7zm0 9h7v9h-7zM3 16h7v5H3z",
+    cpu: "M2 9h4m12 0h4M9 2v4m6-4v4M9 18v4m6-4v4M6 5h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z M9 9h6v6H9Z",
+    memory: "M12 3c-4.4 0-8 1.8-8 4s3.6 4 8 4 8-1.8 8-4-3.6-4-8-4Z M4 7v10c0 2.2 3.6 4 8 4s8-1.8 8-4V7",
+    gpu: "M13 2 L3 14h9l-1 8 10-12h-9l1-8z",
+    network: "M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z M12 2v20 M2 12h20",
+    display: "M2 3h20v14H2zm6 18h8m-4-4v4",
+    browser: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06",
+    storage: "M3 10h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V10zm3 4h.01M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4H3V6z",
+    battery: "M6 7H2v10h4M18 7h4v10h-4 M6 5h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6",
+    runtime: "M4 19V5m0 14h16M8 15l3-3 3 2 5-7",
+    benchmark: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zm-2-13.5l6 3.5-6 3.5v-7z"
+  };
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className={className}><path d={paths[name] || ""}/></svg>;
+});
+
+const Badge = memo(({ type = "idle", children }) => {
+  const classes = {
+    ok: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    no: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+    warn: "bg-amber-500/10 text-amber-300 border-amber-500/20",
+    raw: "bg-blue-900/40 text-blue-300 border-blue-700/50",
+    idle: "bg-slate-700/30 text-slate-400 border-slate-600/40",
+    est: "bg-purple-500/10 text-purple-300 border-purple-500/20"
+  };
+  return <span className={`text-[8px] px-1.5 py-0.5 rounded border font-black uppercase tracking-tighter ${classes[type] || classes.idle}`}>{children}</span>;
+});
+const badgeText = (type) => ({ ok: "정상", no: "미지원", warn: "제한", raw: "RAW", est: "추정", idle: "대기" }[type] || "상태");
+
+const Section = memo(({ title, desc, right, children }) => (
+  <section className="card-bg rounded-2xl p-4 content-fade">
+    <div className="flex items-start justify-between gap-3 mb-3">
+      <div>
+        <h3 className="text-xs font-black uppercase tracking-[0.18em] text-white">{title}</h3>
+        {desc && <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">{desc}</p>}
+      </div>
+      {right}
+    </div>
+    {children}
+  </section>
+));
+
+const Row = memo(({ label, value, badge = "ok", wrap = false, mono = true }) => (
+  <div className="flex justify-between gap-4 items-start py-2 border-b border-white/[0.05] last:border-0 px-1 hover:bg-white/[0.025] rounded">
+    <span className="text-slate-500 text-[10px] font-bold uppercase tracking-tight shrink-0">{label}</span>
+    <div className="flex items-start justify-end gap-2 min-w-0 text-right">
+      <span className={`${mono ? "mono" : ""} text-[11px] text-slate-200 ${wrap ? "break-all whitespace-normal" : "truncate"} max-w-[52vw] md:max-w-lg`}>{val(value)}</span>
+      <Badge type={badge}>{badgeText(badge)}</Badge>
+    </div>
+  </div>
+));
+
+const Rows = memo(({ rows }) => <>{rows.map((r, i) => <Row key={`${r[0]}-${i}`} label={r[0]} value={r[1]} badge={r[2] || "ok"} wrap={!!r[3]} mono={r[4] !== false}/>)}</>);
+
+const Stat = memo(({ label, value, sub, badge = "idle" }) => (
+  <div className="card-bg rounded-2xl px-4 py-3 border-t border-blue-500/10">
+    <div className="flex items-center justify-between gap-2 mb-2">
+      <p className="text-[8px] text-slate-500 font-black uppercase tracking-[0.18em]">{label}</p>
+      <Badge type={badge}>{badge === "ok" ? "OK" : badge === "warn" ? "LIMIT" : badge === "est" ? "EST" : badge === "no" ? "N/A" : badge === "raw" ? "RAW" : "WAIT"}</Badge>
+    </div>
+    <h4 className="text-2xl font-black text-white leading-none mono tracking-tighter break-all">{val(value)}</h4>
+    {sub && <p className="text-[9px] text-slate-500 mt-2 leading-relaxed break-words">{sub}</p>}
+  </div>
+));
+
+const Bar = memo(({ label, value, max = 100, suffix = "" }) => {
+  const ok = Number.isFinite(value);
+  const pct = ok ? clamp((value / Math.max(max, 1)) * 100, 0, 100) : 0;
+  return <div className="py-2">
+    <div className="flex justify-between mb-1">
+      <span className="text-[10px] font-bold text-slate-500">{label}</span>
+      <span className="mono text-[10px] text-slate-300">{ok ? `${Math.round(value)}${suffix}` : "N/A"}</span>
+    </div>
+    <div className="h-1.5 bg-[#010409] rounded-full overflow-hidden border border-white/[0.04]">
+      <div className="h-full bg-blue-600 rounded-full transition-all duration-700" style={{ width: `${pct}%` }}/>
+    </div>
+  </div>;
+});
+
+const LineGraph = memo(({ history, label, unit = "" }) => {
+  const width = 700, height = 120;
+  const clean = (history?.length ? history : [0]).map(v => Number.isFinite(v) ? v : 0);
+  const max = Math.max(...clean, 1);
+  const points = clean.map((n, i) => `${(i / Math.max(clean.length - 1, 1)) * width},${height - (n / max) * height}`).join(" ");
+  return <div className="card-bg p-4 rounded-2xl">
+    <p className="text-[9px] font-black text-blue-500 mb-3 uppercase tracking-widest flex items-center gap-2">
+      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse"/> {label} {unit && `(${unit})`}
+    </p>
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-28" preserveAspectRatio="none">
+      <path d={`M 0 ${height} L ${points} L ${width} ${height} Z`} fill="rgba(37,99,235,.10)"/>
+      <polyline fill="none" stroke="#3b82f6" strokeWidth="2.5" points={points} strokeLinejoin="round" strokeLinecap="round"/>
+    </svg>
+  </div>;
+});
+
+const Ring = memo(({ value, label, sub }) => {
+  const n = Number.isFinite(value) ? clamp(value, 0, 100) : 0;
+  const r = 44, c = 2 * Math.PI * r;
+  return <div className="card-bg rounded-2xl p-4 flex items-center gap-4">
+    <div className="relative w-28 h-28 shrink-0">
+      <svg viewBox="0 0 120 120" className="w-full h-full rotate-[-90deg]">
+        <circle cx="60" cy="60" r={r} fill="none" stroke="rgba(148,163,184,.15)" strokeWidth="10"/>
+        <circle cx="60" cy="60" r={r} fill="none" stroke="#2563eb" strokeWidth="10" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c - (n / 100) * c}/>
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center mono text-2xl font-black text-white">{Math.round(n)}</div>
+    </div>
+    <div>
+      <p className="text-[10px] text-blue-400 font-black uppercase tracking-[.25em]">{label}</p>
+      <p className="text-xs text-slate-500 mt-2 leading-relaxed">{sub}</p>
+    </div>
+  </div>;
+});
+
+const Button = memo(({ children, onClick, danger = false, disabled = false }) => (
+  <button onClick={onClick} disabled={disabled}
+    className={`${danger ? "bg-rose-600 hover:bg-rose-500" : "bg-blue-600 hover:bg-blue-500"} disabled:opacity-40 disabled:cursor-not-allowed px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[.14em] transition`}>
+    {children}
+  </button>
+));
+
+/* =========================
+   DIAGNOSTIC ENGINE
+========================= */
+function useDiagnosticEngine() {
+  const [data, setData] = useState(initialState);
+  const [clock, setClock] = useState(now());
+  const [toast, setToast] = useState("");
+  const [log, setLog] = useState([]);
+  const [history, setHistory] = useState({ net: [], fps: [], heap: [], longTask: [], stress: [] });
+  const [download, setDownload] = useState(null);
+  const [benchUI, setBenchUI] = useState({ running: false, progress: 0, step: "대기" });
+  const [livePaused, setLivePaused] = useState(false);
+  const livePausedRef = useRef(false);
+  const stressRef = useRef(false);
+  const rafRef = useRef(null);
+  const pressureObserverRef = useRef(null);
+
+  useEffect(() => {
+    livePausedRef.current = livePaused;
+  }, [livePaused]);
+
+  const patch = useCallback((updater) => {
+    setData(prev => typeof updater === "function" ? updater(prev) : ({ ...prev, ...updater }));
+  }, []);
+  const notify = useCallback((msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(""), 1700);
+  }, []);
+  const addLog = useCallback((msg) => {
+    setLog(prev => [{ time: now(), msg }, ...prev].slice(0, 8));
+  }, []);
+
+  const scanDisplayBrowser = useCallback(() => {
+    patch(prev => ({
+      ...prev,
+      measuredAt: new Date().toISOString(),
+      device: { type: detect.deviceType(), os: detect.os(), browser: detect.browser() },
+      network: { ...prev.network, online: navigator.onLine },
+      display: {
+        width: screen.width, height: screen.height, availWidth: screen.availWidth, availHeight: screen.availHeight,
+        innerWidth, innerHeight, outerWidth, outerHeight,
+        dpr: devicePixelRatio, colorDepth: screen.colorDepth, pixelDepth: screen.pixelDepth,
+        orientationType: screen.orientation?.type || null,
+        orientationAngle: screen.orientation?.angle ?? null,
+        darkMode: matchMedia("(prefers-color-scheme: dark)").matches,
+        reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
+        hover: matchMedia("(hover: hover)").matches,
+        pointerFine: matchMedia("(pointer: fine)").matches,
+        maxTouchPoints: navigator.maxTouchPoints || 0,
+        touch: ("ontouchstart" in window) || (navigator.maxTouchPoints > 0)
+      },
+      browser: {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        vendor: navigator.vendor,
+        product: navigator.product,
+        language: navigator.language,
+        languages: Array.from(navigator.languages || []).join(", "),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        cookieEnabled: navigator.cookieEnabled,
+        doNotTrack: navigator.doNotTrack || window.doNotTrack || null,
+        localStorage: detect.storageWorks("local"),
+        sessionStorage: detect.storageWorks("session"),
+        indexedDB: "indexedDB" in window,
+        cacheAPI: "caches" in window,
+        serviceWorker: "serviceWorker" in navigator,
+        clipboard: "clipboard" in navigator,
+        webShare: "share" in navigator,
+        wasm: "WebAssembly" in window,
+        worker: "Worker" in window,
+        webgl: prev.gpu.webgl,
+        webgpu: prev.gpu.webgpu,
+        secureContext: window.isSecureContext
+      }
+    }));
+  }, [patch]);
+
+  const scanStatic = useCallback(async (manual = false) => {
+    scanDisplayBrowser();
+
+    await safeRun(async () => {
+      const canvas = document.createElement("canvas");
+      const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+      const gl2 = canvas.getContext("webgl2");
+      const gpu = { webgl: !!gl, webgl2: !!gl2, webgpu: "gpu" in navigator };
+      if (gl) {
+        const dbg = gl.getExtension("WEBGL_debug_renderer_info");
+        gpu.vendor = dbg ? gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR);
+        gpu.renderer = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+        gpu.note = dbg ? "상세 렌더러 표시 가능" : "브라우저가 GPU 상세 정보를 숨길 수 있음";
+        gpu.version = gl.getParameter(gl.VERSION);
+        gpu.shading = gl.getParameter(gl.SHADING_LANGUAGE_VERSION);
+        gpu.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+        gpu.maxRenderbufferSize = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
+        gpu.maxVertexAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+        gpu.maxTextureUnits = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+        gpu.extensions = gl.getSupportedExtensions?.() || [];
+      }
+      patch(p => ({ ...p, gpu: { ...p.gpu, ...gpu } }));
+    });
+
+    await safeRun(async () => {
+      if (!navigator.gpu?.requestAdapter) return;
+      const adapter = await navigator.gpu.requestAdapter();
+      if (!adapter) return;
+      patch(p => ({ ...p, gpu: {
+        ...p.gpu,
+        webgpu: true,
+        webgpuFeatures: Array.from(adapter.features || []),
+        webgpuInfo: adapter.info ? JSON.stringify(adapter.info) : "adapter 정보 제한"
+      }}));
+    });
+
+    await safeRun(async () => {
+      if (!navigator.userAgentData?.getHighEntropyValues) return;
+      const h = await navigator.userAgentData.getHighEntropyValues(["architecture", "bitness", "model", "platform", "platformVersion", "mobile", "wow64"]);
+      patch(p => ({ ...p, cpu: {
+        ...p.cpu,
+        hintsSupported: true,
+        architecture: h.architecture || null,
+        bitness: h.bitness || null,
+        platform: h.platform || navigator.platform || null,
+        platformVersion: h.platformVersion || null,
+        model: h.model || null,
+        mobile: h.mobile,
+        wow64: h.wow64
+      }}));
+    });
+
+    await safeRun(async () => {
+      if (!navigator.getBattery) return;
+      const bat = await navigator.getBattery();
+      const update = () => patch(p => ({
+        ...p,
+        battery: {
+          supported: true,
+          level: Math.round(bat.level * 100),
+          charging: bat.charging,
+          chargingTime: bat.chargingTime,
+          dischargingTime: bat.dischargingTime
+        }
+      }));
+      update();
+      ["levelchange", "chargingchange", "chargingtimechange", "dischargingtimechange"].forEach(e => bat.addEventListener?.(e, update));
+    });
+
+    await safeRun(async () => {
+      if (!navigator.storage?.persisted) return;
+      const persisted = await navigator.storage.persisted();
+      patch(p => ({ ...p, storage: { ...p.storage, persisted } }));
+    });
+
+    if (manual) notify("재스캔 완료");
+  }, [addLog, notify, patch, scanDisplayBrowser]);
+
+  const updateLive = useCallback(async () => {
+    if (livePaused) return;
+    safeRun(() => {
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      patch(p => ({
+        ...p,
+        network: {
+          ...p.network,
+          supported: !!conn,
+          online: navigator.onLine,
+          downlink: conn?.downlink ?? null,
+          rtt: conn?.rtt ?? null,
+          type: conn?.effectiveType ?? null,
+          saveData: conn?.saveData ?? null
+        },
+        memory: {
+          ...p.memory,
+          perfMemorySupported: !!performance.memory,
+          usedJSHeapSize: performance.memory?.usedJSHeapSize || null,
+          totalJSHeapSize: performance.memory?.totalJSHeapSize || null,
+          jsHeapSizeLimit: performance.memory?.jsHeapSizeLimit || null
+        }
+      }));
+      if (conn?.downlink !== undefined) setHistory(h => ({ ...h, net: [...h.net.slice(-59), conn.downlink || 0] }));
+      if (performance.memory?.usedJSHeapSize) setHistory(h => ({ ...h, heap: [...h.heap.slice(-59), performance.memory.usedJSHeapSize / 1024 / 1024] }));
+    });
+
+    await safeRun(async () => {
+      if (!navigator.storage?.estimate) return;
+      const est = await navigator.storage.estimate();
+      patch(p => ({ ...p, storage: { ...p.storage, supported: true, usage: est.usage ?? null, quota: est.quota ?? null } }));
+    });
+
+    safeRun(() => {
+      const nav = performance.getEntriesByType("navigation")[0];
+      const resources = performance.getEntriesByType("resource") || [];
+      const topResources = resources
+        .map(r => ({ name: r.name, type: r.initiatorType || "resource", duration: Math.round(r.duration || 0), transferSize: r.transferSize || 0 }))
+        .sort((a, b) => b.duration - a.duration)
+        .slice(0, 12);
+      if (!nav) return;
+      patch(p => ({ ...p, network: { ...p.network, timing: {
+        load: nav.loadEventEnd ? nav.loadEventEnd - nav.startTime : null,
+        dom: nav.domContentLoadedEventEnd ? nav.domContentLoadedEventEnd - nav.startTime : null,
+        ttfb: nav.responseStart ? nav.responseStart - nav.requestStart : null,
+        dns: nav.domainLookupEnd && nav.domainLookupStart ? nav.domainLookupEnd - nav.domainLookupStart : null,
+        tcp: nav.connectEnd && nav.connectStart ? nav.connectEnd - nav.connectStart : null,
+        tls: nav.secureConnectionStart ? nav.connectEnd - nav.secureConnectionStart : null,
+        response: nav.responseEnd && nav.responseStart ? nav.responseEnd - nav.responseStart : null,
+        resources: resources.length
+      }, resources: topResources }}));
+    });
+  }, [patch, livePaused]);
+
+  useEffect(() => {
+    scanStatic(false);
+    updateLive();
+    const clockTimer = setInterval(() => setClock(now()), 1000);
+    const liveTimer = setInterval(updateLive, 2500);
+    const onResize = () => scanDisplayBrowser();
+    addEventListener("resize", onResize);
+    addEventListener("online", onResize);
+    addEventListener("offline", onResize);
+    return () => {
+      clearInterval(clockTimer);
+      clearInterval(liveTimer);
+      removeEventListener("resize", onResize);
+      removeEventListener("online", onResize);
+      removeEventListener("offline", onResize);
+    };
+  }, [scanStatic, scanDisplayBrowser, updateLive]);
+
+  useEffect(() => {
+    let frames = 0, last = performance.now();
+    const loop = (t) => {
+      frames++;
+      if (t - last >= 1000) {
+        const fps = Math.round(frames * 1000 / (t - last));
+        if (!livePausedRef.current) {
+          patch(p => ({ ...p, runtime: { ...p.runtime, fps } }));
+          setHistory(h => ({ ...h, fps: [...h.fps.slice(-59), fps] }));
+        }
+        frames = 0;
+        last = t;
+      }
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [patch]);
+
+  useEffect(() => {
+    if (!("PerformanceObserver" in window)) return;
+    let observer;
+    try {
+      observer = new PerformanceObserver((list) => {
+        const total = list.getEntries().reduce((sum, e) => sum + e.duration, 0);
+        if (total > 0 && !livePausedRef.current) {
+          const ms = Math.round(total);
+          patch(p => ({ ...p, runtime: { ...p.runtime, longTaskMs: ms } }));
+          setHistory(h => ({ ...h, longTask: [...h.longTask.slice(-59), ms] }));
+        }
+      });
+      observer.observe({ entryTypes: ["longtask"] });
+    } catch {}
+    return () => observer?.disconnect?.();
+  }, [patch]);
+
+  const togglePressure = useCallback(async () => {
+    if (pressureObserverRef.current) {
+      pressureObserverRef.current.disconnect?.();
+      pressureObserverRef.current = null;
+      patch(p => ({ ...p, cpu: { ...p.cpu, pressure: { ...p.cpu.pressure, active: false, note: "관찰 중지됨" } } }));
+      return;
+    }
+    if (!("PressureObserver" in window)) {
+      patch(p => ({ ...p, cpu: { ...p.cpu, pressure: { supported: false, active: false, state: null, source: null, time: now(), note: "Compute Pressure API 미지원" } } }));
+      return;
+    }
+    try {
+      const observer = new PressureObserver((records) => {
+        const last = records[records.length - 1];
+        patch(p => ({ ...p, cpu: { ...p.cpu, pressure: {
+          supported: true, active: true, state: last.state, source: last.source, time: now(), note: "정확한 CPU 사용률(%)이 아니라 상태값입니다."
+        } } }));
+      });
+      await observer.observe("cpu", { sampleInterval: 1000 });
+      pressureObserverRef.current = observer;
+      patch(p => ({ ...p, cpu: { ...p.cpu, pressure: { ...p.cpu.pressure, supported: true, active: true, note: "관찰 시작됨" } } }));
+    } catch (e) {
+      patch(p => ({ ...p, cpu: { ...p.cpu, pressure: { supported: false, active: false, state: null, source: null, time: now(), note: e?.message || "권한/브라우저 제한으로 측정 불가" } } }));
+    }
+  }, [patch]);
+
+  const toggleStress = useCallback(() => {
+    if (stressRef.current) {
+      stressRef.current = false;
+      patch(p => ({ ...p, runtime: { ...p.runtime, webLoad: null, opsPerSec: null } }));
+      return;
+    }
+    stressRef.current = true;
+    setHistory(h => ({ ...h, stress: [] }));
+    const tick = () => {
+      if (!stressRef.current) return;
+      const start = performance.now();
+      let ops = 0;
+      while (performance.now() - start < 160) {
+        Math.sqrt((ops * 9301 + 49297) % 233280);
+        ops++;
+      }
+      const opsPerSec = Math.round(ops / 0.16);
+      const webLoad = clamp(Math.round((opsPerSec / 4200000) * 100), 1, 100);
+      patch(p => ({ ...p, runtime: { ...p.runtime, webLoad, opsPerSec } }));
+      setHistory(h => ({ ...h, stress: [...h.stress.slice(-59), webLoad] }));
+      setTimeout(tick, 350);
+    };
+    tick();
+  }, [patch]);
+
+  const runBenchmark = useCallback(async () => {
+    setBenchUI({ running: true, progress: 0, step: "CPU Single" });
+    await sleep(60);
+
+    const cpuStart = performance.now();
+    let c = 0;
+    while (performance.now() - cpuStart < 520) { Math.sqrt((c * 1103515245 + 12345) & 0x7fffffff); c++; }
+    const cpuSingle = Math.floor(c / 920);
+
+    setBenchUI({ running: true, progress: 25, step: "Memory" });
+    await sleep(60);
+
+    const memStart = performance.now();
+    const arr = new Float64Array(700000);
+    for (let i = 0; i < arr.length; i++) arr[i] = i * 1.337;
+    let sum = 0;
+    for (let i = 0; i < arr.length; i += 7) sum += arr[i];
+    const memory = Math.max(1, Math.floor(120000 / Math.max(performance.now() - memStart, 1)));
+
+    setBenchUI({ running: true, progress: 50, step: "Storage" });
+    await sleep(60);
+
+    let storage = null;
+    try {
+      const s = performance.now();
+      localStorage.setItem("__webz_bench__", "x".repeat(200000));
+      localStorage.removeItem("__webz_bench__");
+      storage = Math.max(1, Math.floor(30000 / Math.max(performance.now() - s, 1)));
+    } catch {}
+
+    setBenchUI({ running: true, progress: 75, step: "Network / Runtime" });
+    await sleep(60);
+
+    const cores = parseInt(data.cpu.cores || 1) || 1;
+    const cpuMulti = Math.floor(cpuSingle * Math.min(cores, 8) * 0.72);
+    const network = data.network.supported && data.network.downlink !== null
+      ? Math.max(1, Math.floor((data.network.downlink * 110) - ((data.network.rtt || 0) * 0.45)))
+      : null;
+    const runtime = data.runtime.fps ? clamp(Math.round(data.runtime.fps * 2), 1, 200) : null;
+    const parts = [cpuSingle, cpuMulti, memory, storage, network, runtime].filter(Number.isFinite);
+    const overall = Math.round(parts.reduce((a, b) => a + b, 0) / Math.max(parts.length, 1));
+
+    patch(p => ({ ...p, bench: { cpuSingle, cpuMulti, memory, storage, network, runtime, overall } }));
+    setBenchUI({ running: false, progress: 100, step: "완료" });
+    notify("벤치마크 완료");
+  }, [data, notify, patch]);
+
+  const runDownloadTest = useCallback(async () => {
+    setDownload({ running: true, error: null, mbps: null, size: null, seconds: null, mode: "test-file" });
+    const measure = async (url, mode) => {
+      const start = performance.now();
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("download failed");
+      const blob = await res.blob();
+      const seconds = (performance.now() - start) / 1000;
+      return { running: false, error: null, mbps: (blob.size * 8) / seconds / 1024 / 1024, size: blob.size, seconds, mode };
+    };
+    try {
+      setDownload(await measure(`./speed-test-10mb.bin?cacheBust=${Date.now()}`, "speed-test-10mb.bin"));
+    } catch {
+      try {
+        const result = await measure(`${location.href.split("#")[0]}?selfTest=${Date.now()}`, "self-html");
+        setDownload({ ...result, error: "speed-test-10mb.bin 파일이 없어 현재 HTML 파일 기준으로 간이 측정했습니다." });
+      } catch {
+        setDownload({ running: false, error: "다운로드 속도 측정을 위해 같은 경로에 speed-test-10mb.bin 테스트 파일이 필요합니다.", mbps: null, size: null, seconds: null, mode: "failed" });
+      }
+    }
+  }, []);
+
+  const requestPersistentStorage = useCallback(async () => {
+    if (!navigator.storage?.persist) {
+      notify("Persistent Storage 미지원");
+      return;
+    }
+    const ok = await safeRun(() => navigator.storage.persist(), false);
+    patch(p => ({ ...p, storage: { ...p.storage, persisted: ok } }));
+    notify(ok ? "영구 저장소 허용됨" : "영구 저장소 거부/불가");
+  }, [notify, patch]);
+
+  const copyReport = useCallback(async (mode = "text") => {
+    if (!navigator.clipboard) {
+      notify("Clipboard API 미지원");
+      return;
+    }
+    const report = `Web-Z 진단 결과
+- 측정 시각: ${new Date().toLocaleString()}
+- 기기 유형: ${data.device.type}
+- OS: ${data.device.os}
+- 브라우저: ${data.device.browser}
+- 보안 컨텍스트: ${window.isSecureContext ? "YES" : "NO"}
+- CPU 논리 코어 수: ${val(data.cpu.cores)}
+- CPU Pressure: ${data.cpu.pressure.state || data.cpu.pressure.note || "측정 전"}
+- RAM 추정값: ${data.memory.deviceMemory ? data.memory.deviceMemory + " GB" : "미지원"}
+- GPU Renderer: ${val(data.gpu.renderer)}
+- WebGL2 지원: ${support(data.gpu.webgl2)}
+- WebGPU 지원: ${support(data.gpu.webgpu)}
+- 화면 해상도: ${screen.width}x${screen.height}
+- DPR: ${devicePixelRatio}
+- 온라인 여부: ${navigator.onLine ? "온라인" : "오프라인"}
+- Network API 지원: ${support(data.network.supported)}
+- Network downlink: ${data.network.downlink !== null ? data.network.downlink + " Mbps" : "API 미지원"}
+- Battery API 지원: ${support(data.battery.supported)}
+- Storage API 지원: ${support(data.storage.supported)}
+- Storage 사용량: ${fmtBytes(data.storage.usage)}
+- CPU Single Score: ${val(data.bench.cpuSingle, "측정 전")}
+- CPU Multi Estimate: ${val(data.bench.cpuMulti, "측정 전")}
+- Memory Score: ${val(data.bench.memory, "측정 전")}
+- Storage Score: ${val(data.bench.storage, "N/A")}
+- Network Score: ${val(data.bench.network, "N/A")}
+- Runtime Score: ${val(data.bench.runtime, "N/A")}
+- Overall Score: ${val(data.bench.overall, "측정 전")}
+주의: 이 결과는 순수 브라우저 API와 웹 벤치마크 기반 참고값입니다.`;
+    await navigator.clipboard.writeText(mode === "json" ? JSON.stringify(data, null, 2) : report);
+    notify(mode === "json" ? "JSON 복사 완료" : "진단 결과 복사 완료");
+  }, [data, notify]);
+
+  const clearHistory = useCallback(() => {
+    setHistory({ net: [], fps: [], heap: [], longTask: [], stress: [] });
+    setLog([]);
+    setDownload(null);
+    notify("히스토리 초기화 완료");
+  }, [notify]);
+
+  const toggleLive = useCallback(() => {
+    setLivePaused(v => !v);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      stressRef.current = false;
+      pressureObserverRef.current?.disconnect?.();
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  return {
+    data, clock, toast, log, history, download, benchUI, livePaused,
+    scanStatic, togglePressure, toggleStress, runBenchmark, runDownloadTest,
+    requestPersistentStorage, copyReport, clearHistory, toggleLive
+  };
+}
+
+/* =========================
+   VIEW HELPERS
+========================= */
+const getRows = {
+  cpu(d) {
+    return [
+      ["Logical processors", d.cpu.cores ? `${d.cpu.cores} Logical` : "미지원", d.cpu.cores ? "est" : "no"],
+      ["UA Client Hints", support(d.cpu.hintsSupported), d.cpu.hintsSupported ? "ok" : "no"],
+      ["Architecture", d.cpu.architecture || "지원 안 됨", d.cpu.architecture ? "raw" : "no"],
+      ["Bitness", d.cpu.bitness || "지원 안 됨", d.cpu.bitness ? "raw" : "no"],
+      ["Platform", d.cpu.platform || navigator.platform || "N/A", "raw"],
+      ["Platform version", d.cpu.platformVersion || "지원 안 됨", d.cpu.platformVersion ? "raw" : "no"],
+      ["Model", d.cpu.model || "지원 안 됨", d.cpu.model ? "raw" : "no"],
+      ["Mobile", d.cpu.mobile === null ? "지원 안 됨" : String(d.cpu.mobile), d.cpu.mobile === null ? "no" : "raw"],
+      ["WOW64", d.cpu.wow64 === null ? "지원 안 됨" : String(d.cpu.wow64), d.cpu.wow64 === null ? "no" : "raw"],
+      ["WASM", support(d.cpu.wasm), d.cpu.wasm ? "ok" : "no"],
+      ["Web Worker", support(d.cpu.worker), d.cpu.worker ? "ok" : "no"],
+      ["SharedArrayBuffer", support(d.cpu.sharedArrayBuffer), d.cpu.sharedArrayBuffer ? "ok" : "no"],
+      ["Atomics", support(d.cpu.atomics), d.cpu.atomics ? "ok" : "no"],
+      ["OffscreenCanvas", support(d.cpu.offscreenCanvas), d.cpu.offscreenCanvas ? "ok" : "no"]
+    ];
+  },
+  memory(d) {
+    return [
+      ["navigator.deviceMemory", support(d.memory.deviceMemorySupported), d.memory.deviceMemorySupported ? "ok" : "no"],
+      ["RAM estimate", d.memory.deviceMemory ? `${d.memory.deviceMemory} GB` : "지원 안 됨", d.memory.deviceMemory ? "est" : "no"],
+      ["performance.memory", support(d.memory.perfMemorySupported), d.memory.perfMemorySupported ? "ok" : "no"],
+      ["usedJSHeapSize", fmtBytes(d.memory.usedJSHeapSize), d.memory.usedJSHeapSize ? "raw" : "no"],
+      ["totalJSHeapSize", fmtBytes(d.memory.totalJSHeapSize), d.memory.totalJSHeapSize ? "raw" : "no"],
+      ["jsHeapSizeLimit", fmtBytes(d.memory.jsHeapSizeLimit), d.memory.jsHeapSizeLimit ? "raw" : "no"],
+      ["Memory Score", d.bench.memory || "측정 전", d.bench.memory ? "est" : "idle"]
+    ];
+  },
+  gpu(d) {
+    return [
+      ["WebGL", support(d.gpu.webgl), d.gpu.webgl ? "ok" : "no"],
+      ["WebGL2", support(d.gpu.webgl2), d.gpu.webgl2 ? "ok" : "no"],
+      ["WebGPU", support(d.gpu.webgpu), d.gpu.webgpu ? "ok" : "no"],
+      ["Vendor", d.gpu.vendor || "브라우저가 숨김", d.gpu.vendor ? "raw" : "warn", true],
+      ["Renderer", d.gpu.renderer || "브라우저가 숨김", d.gpu.renderer ? "raw" : "warn", true],
+      ["Version", d.gpu.version || "N/A", d.gpu.version ? "raw" : "no"],
+      ["Shading language", d.gpu.shading || "N/A", d.gpu.shading ? "raw" : "no"],
+      ["MAX_TEXTURE_SIZE", d.gpu.maxTextureSize || "N/A", d.gpu.maxTextureSize ? "raw" : "no"],
+      ["MAX_RENDERBUFFER_SIZE", d.gpu.maxRenderbufferSize || "N/A", d.gpu.maxRenderbufferSize ? "raw" : "no"],
+      ["MAX_VERTEX_ATTRIBS", d.gpu.maxVertexAttribs || "N/A", d.gpu.maxVertexAttribs ? "raw" : "no"],
+      ["MAX_TEXTURE_UNITS", d.gpu.maxTextureUnits || "N/A", d.gpu.maxTextureUnits ? "raw" : "no"]
+    ];
+  },
+  network(d) {
+    return [
+      ["Online", navigator.onLine ? "온라인" : "오프라인", navigator.onLine ? "ok" : "no"],
+      ["Network API", support(d.network.supported), d.network.supported ? "ok" : "no"],
+      ["effectiveType", d.network.type || "API 미지원", d.network.type ? "raw" : "no"],
+      ["downlink", d.network.downlink !== null ? `${d.network.downlink} Mbps` : "API 미지원", d.network.downlink !== null ? "est" : "no"],
+      ["rtt", d.network.rtt !== null ? `${d.network.rtt} ms` : "API 미지원", d.network.rtt !== null ? "est" : "no"],
+      ["saveData", d.network.saveData === null ? "API 미지원" : String(d.network.saveData), d.network.saveData === null ? "no" : "raw"],
+      ["URL", location.href, "raw", true],
+      ["Protocol", location.protocol, "raw"],
+      ["Host", location.host, "raw"],
+      ["Pathname", location.pathname || "/", "raw", true],
+      ["Referrer", document.referrer || "없음", document.referrer ? "raw" : "idle", true]
+    ];
+  },
+  display(d) {
+    return [
+      ["screen.width", d.display.width, "raw"],
+      ["screen.height", d.display.height, "raw"],
+      ["availWidth", d.display.availWidth, "raw"],
+      ["availHeight", d.display.availHeight, "raw"],
+      ["innerWidth", d.display.innerWidth, "raw"],
+      ["innerHeight", d.display.innerHeight, "raw"],
+      ["outerWidth", d.display.outerWidth, "raw"],
+      ["outerHeight", d.display.outerHeight, "raw"],
+      ["devicePixelRatio", d.display.dpr, "raw"],
+      ["colorDepth", `${val(d.display.colorDepth)} bit`, "raw"],
+      ["pixelDepth", `${val(d.display.pixelDepth)} bit`, "raw"],
+      ["orientation type", d.display.orientationType || "지원 안 됨", d.display.orientationType ? "raw" : "no"],
+      ["orientation angle", d.display.orientationAngle ?? "지원 안 됨", d.display.orientationAngle !== null ? "raw" : "no"],
+      ["dark mode", yesNo(d.display.darkMode), "raw"],
+      ["reduced motion", yesNo(d.display.reducedMotion), "raw"],
+      ["hover", support(d.display.hover), d.display.hover ? "ok" : "no"],
+      ["fine pointer", support(d.display.pointerFine), d.display.pointerFine ? "ok" : "no"],
+      ["maxTouchPoints", d.display.maxTouchPoints, "raw"],
+      ["touch", support(d.display.touch), d.display.touch ? "ok" : "no"]
+    ];
+  },
+  browser(d) {
+    return [
+      ["User Agent", d.browser.userAgent, "raw", true],
+      ["Platform", d.browser.platform, "raw"],
+      ["Vendor", d.browser.vendor || "N/A", "raw"],
+      ["Product", d.browser.product, "raw"],
+      ["Language", d.browser.language, "raw"],
+      ["Languages", d.browser.languages, "raw", true],
+      ["Time zone", d.browser.timeZone, "raw"],
+      ["Secure context", support(d.browser.secureContext), d.browser.secureContext ? "ok" : "warn"],
+      ["Cookie", support(d.browser.cookieEnabled), d.browser.cookieEnabled ? "ok" : "no"],
+      ["Do Not Track", d.browser.doNotTrack || "N/A", d.browser.doNotTrack ? "raw" : "idle"]
+    ];
+  }
+};
+
+function FeatureGrid({ data, compact = false }) {
+  const items = [
+    ["WebAssembly", data.browser.wasm],
+    ["Web Worker", data.browser.worker],
+    ["WebGL", data.gpu.webgl],
+    ["WebGL2", data.gpu.webgl2],
+    ["WebGPU", data.gpu.webgpu],
+    ["Battery", data.battery.supported],
+    ["Storage", data.storage.supported],
+    ["Clipboard", data.browser.clipboard],
+    ["ServiceWorker", data.browser.serviceWorker],
+    ["IndexedDB", data.browser.indexedDB],
+    ["Cache API", data.browser.cacheAPI],
+    ["SecureContext", window.isSecureContext]
+  ];
+  return <div className={`grid ${compact ? "grid-cols-2 md:grid-cols-4" : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"} gap-2`}>
+    {items.map(([name, ok]) => (
+      <div key={name} className="bg-[#010409]/60 border border-white/[0.06] rounded-xl p-3 flex items-center justify-between gap-2">
+        <span className="text-[10px] font-bold text-slate-400">{name}</span>
+        <Badge type={ok ? "ok" : "no"}>{ok ? "OK" : "N/A"}</Badge>
+      </div>
+    ))}
+  </div>;
+}
+
+function ResourceTable({ resources }) {
+  return <div className="overflow-x-auto custom-scrollbar">
+    <table className="w-full text-left text-[10px]">
+      <thead className="text-slate-500 uppercase border-b border-white/[0.06]">
+        <tr><th className="py-2 pr-3">Type</th><th className="py-2 pr-3">Duration</th><th className="py-2 pr-3">Size</th><th className="py-2">Name</th></tr>
+      </thead>
+      <tbody>
+        {resources.map((r, i) => (
+          <tr key={`${r.name}-${i}`} className="border-b border-white/[0.04] text-slate-300">
+            <td className="py-2 pr-3 mono text-blue-300">{r.type}</td>
+            <td className="py-2 pr-3 mono">{r.duration}ms</td>
+            <td className="py-2 pr-3 mono">{fmtBytes(r.transferSize)}</td>
+            <td className="py-2 break-all text-slate-500">{r.name}</td>
+          </tr>
+        ))}
+        {!resources.length && <tr><td className="py-4 text-slate-500" colSpan="4">리소스 측정 대기 중</td></tr>}
+      </tbody>
+    </table>
+  </div>;
+}
+
+/* =========================
+   APP
+========================= */
+function App() {
+  const [tab, setTab] = useState("Overview");
+  const [expert, setExpert] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    try {
+      const saved = localStorage.getItem("webz-theme");
+      if (saved) return saved === "dark";
+    } catch {}
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+  const engine = useDiagnosticEngine();
+  const { data: d, history, log, download, benchUI } = engine;
+
+  useEffect(() => {
+    document.body.classList.toggle("dark-mode", darkMode);
+    try { localStorage.setItem("webz-theme", darkMode ? "dark" : "light"); } catch {}
+  }, [darkMode]);
+
+  const scoreMax = Math.max(
+    d.bench.cpuSingle || 0, d.bench.cpuMulti || 0, d.bench.memory || 0,
+    d.bench.storage || 0, d.bench.network || 0, d.bench.runtime || 0,
+    d.bench.overall || 0, 100
+  );
+
+  const health = useMemo(() => {
+    let score = 55;
+    if (d.network.online) score += 8;
+    if (d.gpu.webgl) score += 8;
+    if (d.gpu.webgl2) score += 5;
+    if (d.gpu.webgpu) score += 5;
+    if (d.memory.deviceMemory) score += 5;
+    if (d.runtime.fps >= 45) score += 8;
+    if (d.runtime.longTaskMs > 100) score -= 8;
+    if (d.bench.overall) score += Math.min(10, d.bench.overall / 60);
+    return clamp(score, 0, 100);
+  }, [d]);
+
+  const storagePct = d.storage.quota ? clamp((d.storage.usage / d.storage.quota) * 100, 0, 100) : 0;
+  const screenPreview = useMemo(() => {
+    const w = d.display.width || screen.width || 1;
+    const h = d.display.height || screen.height || 1;
+    const ratio = w / h;
+    return ratio >= 1 ? { width: 180, height: Math.max(80, 180 / ratio) } : { width: Math.max(80, 180 * ratio), height: 180 };
+  }, [d.display.width, d.display.height]);
+
+  return (
+    <div className="flex flex-col lg:flex-row h-screen w-full overflow-hidden thin-grid">
+      <aside className="w-full lg:w-48 bg-[#0d1117]/95 border-r border-[#30363d] p-2 flex flex-col shrink-0 z-50">
+        <div className="flex items-center gap-2 mb-5 px-2 shrink-0">
+          <div className="bg-blue-600 p-1.5 rounded-lg shadow-lg shadow-blue-600/30"><Icon name="cpu" size={16} className="text-white"/></div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-black text-white italic tracking-tighter leading-none glow-blue">{APP.name}</h1>
+              <button
+                type="button"
+                className="theme-toggle"
+                onClick={() => setDarkMode(v => !v)}
+                title={darkMode ? "라이트모드로 전환" : "다크모드로 전환"}
+                aria-label={darkMode ? "라이트모드로 전환" : "다크모드로 전환"}
+              >
+                {darkMode ? "☀️" : "🌙"}
+              </button>
+            </div>
+            <p className="text-[7px] text-slate-500 font-black tracking-[0.22em]">{APP.version}</p>
+          </div>
+        </div>
+
+        <nav className="flex lg:flex-col gap-0.5 overflow-x-auto lg:overflow-y-auto custom-scrollbar">
+          {APP.tabs.map(([id, icon]) => (
+            <button key={id} onClick={() => setTab(id)} title={`${id} 탭 열기`}
+              className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all shrink-0 uppercase tracking-tighter ${tab === id ? "tab-active" : "text-slate-500 hover:bg-white/[0.04]"}`}>
+              <Icon name={icon} size={13}/> {id}
+            </button>
+          ))}
+        </nav>
+
+        <div className="mt-auto pt-4 hidden lg:block">
+          <button onClick={() => setExpert(v => !v)} className="w-full text-[9px] font-black uppercase tracking-[.18em] border border-[#30363d] rounded-xl py-2 text-slate-400 hover:text-white hover:border-blue-500 transition">
+            {expert ? "Expert ON" : "Expert OFF"}
+          </button>
+          <p className="text-center mt-4 text-[7px] font-black uppercase tracking-[0.3em] opacity-20">BROWSER BASED</p>
+        </div>
+      </aside>
+
+      <main className="flex-1 overflow-y-auto p-4 lg:p-6 custom-scrollbar">
+        <header className="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#30363d] pb-3">
+          <h2 className="text-2xl font-black italic uppercase text-white tracking-tighter leading-none glow-blue">{tab}</h2>
+          <div className="flex items-center gap-2 flex-wrap">
+            {engine.toast && <span className="text-[9px] bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-2 py-1 rounded mono">{engine.toast}</span>}
+            <button onClick={() => engine.copyReport("text")} className="text-[9px] mono text-slate-300 font-bold bg-[#0d1117] hover:border-blue-500 px-2 py-1 rounded border border-[#30363d]">COPY</button>
+            <button onClick={() => engine.scanStatic(true)} className="text-[9px] mono text-slate-300 font-bold bg-[#0d1117] hover:border-blue-500 px-2 py-1 rounded border border-[#30363d]">RESCAN</button>
+            <button onClick={engine.toggleLive} className="text-[9px] mono text-slate-300 font-bold bg-[#0d1117] hover:border-blue-500 px-2 py-1 rounded border border-[#30363d]">{engine.livePaused ? "LIVE OFF" : "LIVE ON"}</button>
+            <button onClick={engine.clearHistory} className="text-[9px] mono text-slate-300 font-bold bg-[#0d1117] hover:border-blue-500 px-2 py-1 rounded border border-[#30363d]">CLEAR</button>
+            <div className="text-[9px] mono text-slate-500 font-bold bg-[#0d1117] px-2 py-1 rounded border border-[#30363d]">{engine.clock}</div>
+          </div>
+        </header>
+
+        <div className="max-w-6xl space-y-4 content-fade">
+          {tab === "Overview" && (
+            <>
+              <div className="card-bg rounded-2xl p-4 border-blue-500/20 bg-blue-950/10">
+                <p className="text-[10px] text-amber-200 leading-relaxed font-semibold">
+                  이 웹앱은 순수 브라우저 API만 사용하는 낙서 노트 스타일 진단표입니다. 브라우저 보안 정책상 실제 CPU 모델명, 온도, 전압, 메인보드, BIOS, RAM 타이밍, 팬 속도, OS 프로세스 목록, 프로세스별 CPU 사용률 등은 읽을 수 없습니다.
+                  표시되는 일부 값은 브라우저가 제공하는 추정값이거나 벤치마크 기반 측정값입니다.
+                </p>
+              </div>
+
+              <div className="grid lg:grid-cols-[1fr_360px] gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <Stat label="Device" value={d.device.type} sub={`${d.device.os} / ${d.device.browser}`} badge="raw"/>
+                  <Stat label="Cores" value={val(d.cpu.cores)} sub="브라우저 노출 논리 코어" badge="est"/>
+                  <Stat label="Memory" value={d.memory.deviceMemory ? `${d.memory.deviceMemory}G` : "미지원"} sub="실제 RAM이 아닌 추정값" badge={d.memory.deviceMemory ? "est" : "no"}/>
+                  <Stat label="CPU Pressure" value={d.cpu.pressure.state || "측정 전"} sub={d.cpu.pressure.note} badge={d.cpu.pressure.state ? "warn" : "idle"}/>
+                  <Stat label="GPU" value={d.gpu.webgl ? "WebGL" : "미지원"} sub={d.gpu.renderer || d.gpu.note} badge={d.gpu.webgl ? "ok" : "no"}/>
+                  <Stat label="Network" value={d.network.downlink !== null ? `${d.network.downlink}M` : "API 미지원"} sub={navigator.onLine ? "온라인" : "오프라인"} badge={d.network.supported ? "est" : "no"}/>
+                  <Stat label="Battery" value={d.battery.supported ? `${d.battery.level}%` : "미지원"} sub={d.battery.charging === null ? "Battery API 없음" : d.battery.charging ? "충전 중" : "방전 중"} badge={d.battery.supported ? "ok" : "no"}/>
+                  <Stat label="Overall" value={d.bench.overall ?? "READY"} sub="웹 내부 기준 점수" badge={d.bench.overall ? "est" : "idle"}/>
+                </div>
+                <Ring value={health} label="Web-Z health index" sub="지원 API, FPS, Long Task, 벤치마크를 종합한 웹 진단 상태입니다."/>
+              </div>
+
+              <Section title="Feature support snapshot" desc={`현재 브라우저가 지원하는 주요 웹 API입니다. 라이브 모니터: ${engine.livePaused ? "일시정지" : "실행 중"}`}>
+                <FeatureGrid data={d} compact/>
+              </Section>
+
+              <Section title="Benchmark score board" desc="정확한 하드웨어 점수가 아니라 Web-Z 내부 측정/추정 점수입니다."
+                right={<Button onClick={engine.runBenchmark} disabled={benchUI.running}>{benchUI.running ? benchUI.step : "Run"}</Button>}>
+                <Bar label="CPU Single" value={d.bench.cpuSingle} max={scoreMax}/>
+                <Bar label="CPU Multi Estimate" value={d.bench.cpuMulti} max={scoreMax}/>
+                <Bar label="Memory" value={d.bench.memory} max={scoreMax}/>
+                <Bar label="Storage" value={d.bench.storage} max={scoreMax}/>
+                <Bar label="Network" value={d.bench.network} max={scoreMax}/>
+                <Bar label="Runtime" value={d.bench.runtime} max={scoreMax}/>
+                <Bar label="Overall" value={d.bench.overall} max={scoreMax}/>
+              </Section>
+
+              {log.length > 0 && <Section title="Diagnostic log" desc="권한/브라우저 제한으로 실패한 일부 진단 기록입니다.">
+                <Rows rows={log.map(x => [x.time, x.msg, "warn", true])}/>
+              </Section>}
+            </>
+          )}
+
+          {tab === "CPU" && (
+            <>
+              <Section title="CPU exposed by browser" desc="CPU-Z식 실제 CPU 정보가 아니라 브라우저가 제한적으로 노출하는 정보입니다."
+                right={<Button onClick={engine.togglePressure}>{d.cpu.pressure.active ? "Pressure 중지" : "Pressure 시작"}</Button>}>
+                <Rows rows={getRows.cpu(d)}/>
+                {expert && <Row label="User Agent" value={navigator.userAgent} badge="raw" wrap/>}
+              </Section>
+
+              <Section title="CPU pressure / usage substitute" desc="정확한 CPU 사용률(%)은 순수 웹에서 접근 불가입니다. 지원 브라우저에서는 Compute Pressure 상태값을 보여주고, 미지원 시 아래 웹 부하 테스트로 대체합니다.">
+                <div className="grid md:grid-cols-3 gap-3 mb-3">
+                  <Stat label="Pressure state" value={d.cpu.pressure.state || "측정 전"} sub={d.cpu.pressure.note} badge={d.cpu.pressure.state ? "warn" : "idle"}/>
+                  <Stat label="Web stress ops/s" value={d.runtime.opsPerSec ? d.runtime.opsPerSec.toLocaleString() : "대기"} sub="현재 페이지 반복 연산 기준" badge={d.runtime.webLoad ? "warn" : "idle"}/>
+                  <Stat label="Load estimate" value={d.runtime.webLoad ? `${d.runtime.webLoad}%` : "대기"} sub="진짜 CPU 사용률이 아닌 웹 부하 추정" badge={d.runtime.webLoad ? "est" : "idle"}/>
+                </div>
+                <Button onClick={engine.toggleStress} danger={!!d.runtime.webLoad}>{d.runtime.webLoad ? "부하 테스트 중지" : "웹 부하 테스트 시작"}</Button>
+              </Section>
+
+              <Section title="CPU-Z style unavailable fields" desc="아래 정보는 브라우저 보안 정책상 순수 웹에서 직접 읽을 수 없습니다.">
+                <Rows rows={["정확한 CPU 모델명", "실시간 CPU 클럭", "CPU 전압", "CPU 온도", "L1/L2/L3 캐시", "스테핑", "TDP", "메인보드 칩셋", "팬 속도", "OS 프로세스 목록", "프로세스별 CPU 사용률"].map(x => [x, "순수 웹에서 접근 불가", "no"])}/>
+              </Section>
+            </>
+          )}
+
+          {tab === "Memory" && (
+            <>
+              <Section title="Memory and JS heap" desc="브라우저가 실제로 제공하는 메모리 정보만 표시합니다. RAM 값은 실제 하드웨어 용량이 아니라 추정값입니다.">
+                <Rows rows={getRows.memory(d)}/>
+              </Section>
+              <LineGraph history={history.heap} label="JS heap used history" unit="MB"/>
+            </>
+          )}
+
+          {tab === "GPU" && (
+            <>
+              <Section title="WebGL / WebGPU" desc="GPU 상세 정보는 브라우저가 개인정보 보호 목적으로 숨길 수 있습니다.">
+                <Rows rows={getRows.gpu(d)}/>
+                {expert && <Row label="WebGPU features" value={d.gpu.webgpuFeatures.length ? d.gpu.webgpuFeatures.join(", ") : "N/A"} badge={d.gpu.webgpuFeatures.length ? "raw" : "no"} wrap/>}
+              </Section>
+              {expert && <Section title="WebGL extensions" desc="브라우저가 노출하는 WebGL 확장 목록입니다.">
+                <div className="flex flex-wrap gap-2">
+                  {(d.gpu.extensions || []).slice(0, 80).map(ext => <span key={ext} className="text-[9px] mono bg-[#010409] border border-white/[0.06] rounded-lg px-2 py-1 text-slate-400">{ext}</span>)}
+                  {!d.gpu.extensions?.length && <p className="text-xs text-slate-500">확장 목록 없음</p>}
+                </div>
+              </Section>}
+            </>
+          )}
+
+          {tab === "Network" && (
+            <>
+              <Section title="Network information" desc="Network Information API 미지원 시 0Mbps가 아니라 API 미지원으로 표시합니다."
+                right={<Button onClick={engine.runDownloadTest}>다운로드 테스트</Button>}>
+                <Rows rows={getRows.network(d)}/>
+              </Section>
+
+              {download && <Section title="Download test result">
+                {download.running && <p className="text-sm font-bold text-blue-300">측정 중...</p>}
+                {download.error && <p className="text-xs text-amber-300 leading-relaxed mb-3">{download.error}</p>}
+                {download.mbps && <Rows rows={[
+                  ["Speed", `${download.mbps.toFixed(2)} Mbps`, "est"],
+                  ["Size", fmtBytes(download.size), "raw"],
+                  ["Duration", `${download.seconds.toFixed(2)} s`, "raw"],
+                  ["Mode", download.mode, "raw"]
+                ]}/>}
+              </Section>}
+
+              <div className="grid lg:grid-cols-2 gap-4">
+                <Section title="Navigation timing">
+                  <Bar label="DNS" value={d.network.timing.dns} max={Math.max(d.network.timing.load || 100, 100)} suffix="ms"/>
+                  <Bar label="TCP" value={d.network.timing.tcp} max={Math.max(d.network.timing.load || 100, 100)} suffix="ms"/>
+                  <Bar label="TLS" value={d.network.timing.tls} max={Math.max(d.network.timing.load || 100, 100)} suffix="ms"/>
+                  <Bar label="TTFB" value={d.network.timing.ttfb} max={Math.max(d.network.timing.load || 100, 100)} suffix="ms"/>
+                  <Bar label="Response" value={d.network.timing.response} max={Math.max(d.network.timing.load || 100, 100)} suffix="ms"/>
+                  <Bar label="DOMContentLoaded" value={d.network.timing.dom} max={Math.max(d.network.timing.load || 100, 100)} suffix="ms"/>
+                  <Bar label="Full load" value={d.network.timing.load} max={Math.max(d.network.timing.load || 100, 100)} suffix="ms"/>
+                  <Row label="Resource count" value={d.network.timing.resources ?? "측정 전"} badge={d.network.timing.resources !== null ? "raw" : "idle"}/>
+                </Section>
+                <LineGraph history={history.net} label="Network downlink history" unit="Mbps"/>
+              </div>
+
+              <Section title="Web resource monitor" desc="OS 프로세스 목록은 읽을 수 없으므로, 현재 페이지의 리소스 로딩 목록을 작업 관리자처럼 표시합니다.">
+                <ResourceTable resources={d.network.resources}/>
+              </Section>
+            </>
+          )}
+
+          {tab === "Display" && (
+            <div className="grid lg:grid-cols-[1fr_300px] gap-4">
+              <Section title="Display metrics"><Rows rows={getRows.display(d)}/></Section>
+              <Section title="Screen ratio preview" desc="현재 화면 비율을 단순 시각화한 미리보기입니다.">
+                <div className="h-60 flex items-center justify-center">
+                  <div className="bg-blue-600/20 border-2 border-blue-500 rounded-xl shadow-lg shadow-blue-600/10" style={{ width: screenPreview.width, height: screenPreview.height }}/>
+                </div>
+                <p className="text-center mono text-xs text-slate-400">{d.display.width} × {d.display.height}</p>
+              </Section>
+            </div>
+          )}
+
+          {tab === "Browser" && (
+            <>
+              <Section title="Browser / OS"><Rows rows={getRows.browser(d)}/></Section>
+              <Section title="Web API support matrix"><FeatureGrid data={d}/></Section>
+              <Section title="Excluded scope" desc="제작 범위를 줄이기 위해 아래 영역은 제외했습니다.">
+                <p className="text-xs text-slate-400 leading-relaxed">{APP.excluded}</p>
+              </Section>
+            </>
+          )}
+
+          {tab === "Storage" && (
+            <Section title="Storage estimate" desc="현재 사이트 기준 저장공간 사용량입니다. 전체 디스크 용량이 아닙니다."
+              right={<Button onClick={engine.requestPersistentStorage}>영구 저장소 요청</Button>}>
+              <Rows rows={[
+                ["Storage API", support(d.storage.supported), d.storage.supported ? "ok" : "no"],
+                ["Usage", d.storage.usage !== null ? fmtBytes(d.storage.usage) : "측정 불가", d.storage.usage !== null ? "raw" : "no"],
+                ["Quota", d.storage.quota !== null ? fmtBytes(d.storage.quota) : "측정 불가", d.storage.quota !== null ? "raw" : "no"],
+                ["Persisted", d.storage.persisted === null ? "측정 전" : String(d.storage.persisted), d.storage.persisted ? "ok" : "idle"],
+                ["Storage Score", d.bench.storage || "측정 전", d.bench.storage ? "est" : "idle"]
+              ]}/>
+              <div className="mt-5">
+                <div className="flex justify-between text-[10px] text-slate-500 font-bold mb-1"><span>USAGE</span><span>{storagePct.toFixed(2)}%</span></div>
+                <div className="w-full bg-[#010409] h-2 rounded-full overflow-hidden border border-white/[0.05]">
+                  <div className="bg-blue-600 h-full transition-all duration-700" style={{ width: `${storagePct}%` }}/>
+                </div>
+              </div>
+            </Section>
+          )}
+
+          {tab === "Battery" && (
+            <Section title="Battery status" desc="Battery API는 브라우저 지원 차이가 큽니다. 미지원 시 0%로 표시하지 않습니다.">
+              {!d.battery.supported ? (
+                <div className="p-8 text-center">
+                  <div className="text-4xl font-black text-slate-600 mb-2">N/A</div>
+                  <p className="text-xs text-slate-500 font-bold">Battery API 지원 안 됨</p>
+                </div>
+              ) : (
+                <>
+                  <div className="text-center py-6">
+                    <div className="text-7xl font-black text-white glow-blue mono leading-none">{d.battery.level}%</div>
+                    <p className="text-xs text-slate-500 font-bold mt-2">{d.battery.charging ? "Connected / Charging" : "Discharging"}</p>
+                  </div>
+                  <Rows rows={[
+                    ["Charging time", fmtSec(d.battery.chargingTime), "raw"],
+                    ["Discharging time", fmtSec(d.battery.dischargingTime), "raw"]
+                  ]}/>
+                </>
+              )}
+            </Section>
+          )}
+
+          {tab === "Runtime" && (
+            <>
+              <div className="grid md:grid-cols-4 gap-3">
+                <Stat label="FPS" value={d.runtime.fps ?? "측정 중"} sub="requestAnimationFrame 기준" badge={d.runtime.fps ? "est" : "idle"}/>
+                <Stat label="Long Task" value={`${d.runtime.longTaskMs}ms`} sub="최근 긴 작업 총량" badge={d.runtime.longTaskMs > 80 ? "warn" : "ok"}/>
+                <Stat label="JS Heap" value={fmtBytes(d.memory.usedJSHeapSize)} sub="지원 브라우저 한정" badge={d.memory.usedJSHeapSize ? "raw" : "no"}/>
+                <Stat label="Web Load" value={d.runtime.webLoad ? `${d.runtime.webLoad}%` : "대기"} sub="진짜 CPU 사용률 아님" badge={d.runtime.webLoad ? "est" : "idle"}/>
+              </div>
+              <Section title="Runtime controls" desc={`현재 페이지 기준 부하 테스트입니다. OS 전체 CPU 사용률이 아닙니다. 라이브 모니터: ${engine.livePaused ? "일시정지" : "실행 중"}`}>
+                <Button onClick={engine.toggleStress} danger={!!d.runtime.webLoad}>{d.runtime.webLoad ? "부하 테스트 중지" : "웹 부하 테스트 시작"}</Button>
+                <div className="grid md:grid-cols-2 gap-3 mt-4">
+                  <Row label="ops/s" value={d.runtime.opsPerSec ? d.runtime.opsPerSec.toLocaleString() : "대기"} badge={d.runtime.opsPerSec ? "est" : "idle"}/>
+                  <Row label="load estimate" value={d.runtime.webLoad ? `${d.runtime.webLoad}%` : "대기"} badge={d.runtime.webLoad ? "est" : "idle"}/>
+                </div>
+              </Section>
+              <LineGraph history={history.fps} label="FPS history" unit="fps"/>
+              <LineGraph history={history.longTask} label="Long task history" unit="ms"/>
+              <LineGraph history={history.heap} label="JS heap history" unit="MB"/>
+              <LineGraph history={history.stress} label="Web stress estimate" unit="%"/>
+              <Section title="Runtime explanation">
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  순수 웹에서는 작업 관리자처럼 OS 전체 CPU 사용률, 프로세스 목록, 프로세스별 메모리 사용량을 읽을 수 없습니다.
+                  대신 이 탭은 현재 웹페이지 기준 FPS, Long Task, JS Heap, 웹 부하 테스트를 보여줍니다.
+                </p>
+              </Section>
+            </>
+          )}
+
+          {tab === "Benchmark" && (
+            <Section title="Benchmark Pro" desc="브라우저 환경에서 가능한 간단한 성능 측정입니다. 절대 성능 기준이 아니라 비교 참고용입니다."
+              right={<Button onClick={engine.runBenchmark} disabled={benchUI.running}>Run Diagnostic</Button>}>
+              <div className="text-center py-5">
+                <p className="text-[9px] text-blue-500 font-black uppercase tracking-[0.4em] mb-2">Overall score</p>
+                <div className="text-8xl font-black text-white glow-blue mono tracking-tighter">{benchUI.running ? "..." : (d.bench.overall ?? "READY")}</div>
+                {benchUI.running && <p className="mt-3 text-xs text-slate-500 font-bold">{benchUI.step} / {benchUI.progress}%</p>}
+              </div>
+              <Bar label="Progress" value={benchUI.progress} max={100} suffix="%"/>
+              <Bar label="CPU Single Score" value={d.bench.cpuSingle} max={scoreMax}/>
+              <Bar label="CPU Multi Estimate" value={d.bench.cpuMulti} max={scoreMax}/>
+              <Bar label="Memory Score" value={d.bench.memory} max={scoreMax}/>
+              <Bar label="Storage Score" value={d.bench.storage} max={scoreMax}/>
+              <Bar label="Network Score" value={d.bench.network} max={scoreMax}/>
+              <Bar label="Runtime Score" value={d.bench.runtime} max={scoreMax}/>
+              <Bar label="Overall Score" value={d.bench.overall} max={scoreMax}/>
+              <div className="flex gap-2 flex-wrap mt-4">
+                <Button onClick={() => engine.copyReport("text")}>진단 결과 복사</Button>
+                <Button onClick={() => engine.copyReport("json")}>JSON 복사</Button>
+              </div>
+            </Section>
+          )}
+        </div>
+
+        <footer className="mt-12 opacity-20 text-[8px] font-black uppercase tracking-[.8em] text-center pb-12 italic">
+          {APP.footer}
+        </footer>
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <ErrorBoundary>
+    <App/>
+  </ErrorBoundary>
+);
+</script>
+</body>
+</html>
